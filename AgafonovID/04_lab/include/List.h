@@ -42,6 +42,10 @@ public:
 template <typename T>
 List<T>::List() {
     pFirst = nullptr;
+    curr = nullptr;
+    prev = nullptr;
+    pStop = nullptr;
+    pLast = nullptr;
 }
 
 template <typename T>
