@@ -1,41 +1,27 @@
 #include "Monom.h"
-#include <sstream>
+#include <cmath>
 #include <iostream>
-#include <stdexcept>
 
-Monom::Monom(double c, int d) : coef(c), degree(d) {}
 
-Monom::Monom(const std::string& expr) {
-    coef = 1.0;
-    degree = 0;
+Monom::Monom() {
+    coef = 0;
+    degree = -1;
+}
 
-    size_t x_pos = expr.find('x');
-    size_t y_pos = expr.find('y');
-    size_t z_pos = expr.find('z');
-
-    if (x_pos != std::string::npos) {
-        std::string coef_str = expr.substr(0, x_pos);
-        if (coef_str.empty() || coef_str == "+") coef = 1.0;
-        else if (coef_str == "-") coef = -1.0;
-        else coef = stod(coef_str);
+Monom::Monom(double c, int d) {
+    coef = c;
+    if (d >= 0 && d <= 999) {
+        degree = d;
     }
     else {
-        coef = stod(expr);
-        degree = 0;
-        return;
+        throw std::exception("Incorrect degree");
     }
+   
+}
 
-    auto parseDegree = [](const std::string& s, size_t pos) {
-        if (pos == std::string::npos) return 0;
-        if (pos + 1 >= s.size() || s[pos + 1] != '^') return 1;
-        return std::stoi(s.substr(pos + 2));
-        };
-
-    int x_deg = parseDegree(expr, x_pos);
-    int y_deg = parseDegree(expr, y_pos);
-    int z_deg = parseDegree(expr, z_pos);
-
-    degree = x_deg * 100 + y_deg * 10 + z_deg;
+Monom::Monom(const Monom& m) {
+    coef = m.coef;
+    degree = m.degree;
 }
 
 double Monom::getCoef() const {
@@ -65,33 +51,149 @@ bool Monom::operator>(const Monom& m) const {
     return degree > m.degree;
 }
 
-Monom Monom::operator*(const Monom& m) const {
-    int x = (degree / 100 + m.degree / 100);
-    int y = (degree / 10 % 10 + m.degree / 10 % 10);
-    int z = (degree % 10 + m.degree % 10);
+bool Monom::operator>=(const Monom& m) const {
+    return degree >= m.degree;
+}
 
-    if (x > 9 || y > 9 || z > 9) {
-        throw std::overflow_error("Degree overflow in multiplication");
+bool Monom::operator<=(const Monom& m) const {
+    return degree <= m.degree;
+}
+
+std::string Monom::Monom_tostr() const {
+    std::string s;
+    if (coef > 0) {
+        s += "+";
+        if (coef != 1 || degree == 0) {
+            std::stringstream ss;
+            ss << std::defaultfloat << coef;
+            s += ss.str();
+        }
+       
+    }
+    else if (coef < 0) {
+        if (coef != -1 || degree == 0) {
+            std::stringstream ss;
+            ss << std::defaultfloat << coef;
+            s += ss.str();
+        }
+        else {  
+            s += "-";
+        }
+    }
+    else {
+        return "";
+    }
+    int tmp = degree;
+    if (tmp / 100) {
+
+        if ((tmp / 100) == 1) {
+            s += "x";
+        }
+        else {
+            std::string xd = "x^";
+            xd += '0' + tmp / 100;
+            s += xd;
+        }
+    }
+    if ((tmp - 100 * (tmp / 100)) / 10) {
+
+        if (((tmp - 100 * (tmp / 100)) / 10) == 1) {
+            s += "y";
+        }
+        else {
+            std::string yd = "y^";
+            yd += '0' + ((tmp - 100 * (tmp / 100)) / 10);
+            s += yd;
+        }
+    }
+    if (tmp % 10) {
+        if ((tmp % 10) == 1) {
+            s += "z";
+        }
+        else {
+            std::string zd = "z^";
+            zd += '0' + tmp % 10;
+            s += zd;
+        }
+
     }
 
-    return Monom(coef * m.coef, x * 100 + y * 10 + z);
+    return s;
 }
 
-std::istream& operator>>(std::istream& is, Monom& m) {
-    double c;
-    int x, y, z;
-    std::cout << "Введите коэффициент и степени x y z: ";
-    is >> c >> x >> y >> z;
-    m.coef = c;
-    m.degree = x * 100 + y * 10 + z;
-    return is;
+double Monom::operator()(double x, double y, double z) const
+{
+    int d = degree;
+    double res = coef;
+    if (d / 100) {
+        res *= pow(x, d / 100);
+    }
+    if ((d - 100 * (d / 100)) / 10) {
+        res *= pow(y, ((d - 100 * (d / 100)) / 10));
+    }
+    if (d % 10) {
+        res *= pow(z, d % 10);
+
+    }
+    return res;
 }
 
-std::ostream& operator<<(std::ostream& os, const Monom& m) {
-    int x = m.degree / 100;
-    int y = (m.degree / 10) % 10;
-    int z = m.degree % 10;
-    os << m.coef << "x^" << x << "y^" << y << "z^" << z;
-    return os;
+Monom Monom::operator+(const Monom& m)
+{
+    if (degree == m.degree) {
+        return Monom(coef + m.coef, degree);
+    }
+    else {
+        throw std::exception("diff degree");
+    }
 }
+
+Monom Monom::operator-(const Monom& m)
+{
+    if (degree == m.degree) {
+        return Monom(coef - m.coef, degree);
+    }
+    else {
+        throw std::exception("diff degree");
+    }
+}
+
+Monom Monom::operator*(const Monom& p) 
+{
+    int x, px, y, py, z, pz;
+    x = degree / 100;
+    px = p.degree / 100;
+
+    if ((x + px) > 9) {
+        throw std::exception("incorrect degree");;
+    }
+    y = ((degree - 100 * (degree / 100)) / 10);
+    py = ((p.degree - 100 * (p.degree / 100)) / 10);
+    if ((y + py) > 9) {
+        throw std::exception("incorrect degree");;
+    }
+    z = degree % 10;
+    pz = p.degree % 10;
+    if ((z + pz) > 9) {
+        throw std::exception("incorrect degree");;
+    }
+
+    return Monom(coef * p.coef, degree + p.degree);
+}
+
+Monom Monom::operator*(double p)
+{
+    return Monom(coef * p, degree);
+}
+
+const Monom& Monom::operator=(const Monom& m) {
+    if (this == &m)
+    {
+        return *this;
+    }
+    coef = m.coef;
+    degree = m.degree;
+    return *this;
+}
+
 

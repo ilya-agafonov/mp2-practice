@@ -5,12 +5,13 @@ template<typename T>
 class RingList : public HeadList<T> {
 public:
     RingList();
-    RingList(const RingList<T>& other);
+    RingList(const RingList<T>& list);
     ~RingList();
 
+    RingList<T>& operator=(const RingList<T>& list);
     void pushBack(T data); 
     void clear();         
-    void print() const;
+    
 };
 
 template<typename T>
@@ -21,9 +22,9 @@ RingList<T>::RingList() {
 }
 
 template<typename T>
-RingList<T>::RingList(const RingList<T>& other) : RingList<T>() {
-    TNode<T>* tmp = other.pHead->pNext;
-    while (tmp != other.pHead) {
+RingList<T>::RingList(const RingList<T>& list) : RingList<T>() {
+    TNode<T>* tmp = list.pHead->pNext;
+    while (tmp != list.pHead) {
         pushBack(tmp->data);
         tmp = tmp->pNext;
     }
@@ -37,40 +38,47 @@ RingList<T>::~RingList() {
 }
 
 template<typename T>
+RingList<T>& RingList<T>::operator=(const RingList<T>& list) {
+    if (this == &list)
+        return *this;
+
+    clear();
+    TNode<T>* tmp = list.pHead->pNext;
+    while (tmp != list.pHead) {
+        pushBack(tmp->data);
+        tmp = tmp->pNext;
+    }
+    return *this;
+}
+
+
+template<typename T>
 void RingList<T>::clear() {
     TNode<T>* current = this->pHead->pNext;
     while (current != this->pHead) {
         TNode<T>* next = current->pNext;
         delete current;
-        current = next; 
+        current = next;
     }
-    this->pHead->pNext = this->pHead;
+    this->pHead->pNext = this->pHead;  
     this->pFirst = this->pHead;
 }
 
 template<typename T>
 void RingList<T>::pushBack(T data) {
     TNode<T>* newNode = new TNode<T>(data);
-    TNode<T>* last = this->pHead;
 
-    while (last->pNext != this->pHead) {
-        last = last->pNext;
-    }
-
-    last->pNext = newNode;
-    newNode->pNext = this->pHead;
-
-    if (this->pFirst == this->pHead) {
+    if (this->pHead->pNext == this->pHead) { 
+        this->pHead->pNext = newNode;
+        newNode->pNext = this->pHead;
         this->pFirst = newNode;
     }
-}
-
-template<typename T>
-void RingList<T>::print() const {
-    TNode<T>* tmp = pHead->pNext;
-    while (tmp != pHead) {
-        cout << tmp->data << " ";
-        tmp = tmp->pNext;
+    else {
+        TNode<T>* last = this->pHead->pNext;
+        while (last->pNext != this->pHead) {
+            last = last->pNext;
+        }
+        last->pNext = newNode;
+        newNode->pNext = this->pHead;
     }
-    cout << endl;
 }

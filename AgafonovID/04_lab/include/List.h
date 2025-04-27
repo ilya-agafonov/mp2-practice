@@ -7,8 +7,10 @@ template <typename T>
 struct TNode {
     T data;
     TNode* pNext;
-    TNode() : data(0), pNext(nullptr) {};
-    TNode(const T& data) : data(data), pNext(nullptr) {};
+    TNode() : pNext(nullptr) {};
+    TNode(const T& data_) : data(data_), pNext(nullptr) {};
+    TNode(const TNode& nd) :data(nd.data), pNext(nd.pNext) {}
+    TNode(const TNode* nd) :data(nd.data), pNext(nd.pNext) {}
 };
 
 template<typename T>
@@ -28,6 +30,7 @@ public:
     const List& operator=(const List<T>& list);
     bool operator==(const List<T>& list) const;
 
+    TNode<T>* getFirst() const;
     void pushFront(TNode<T>* pNode);
     void pushBack(TNode<T>* pNode);
     void insertAfter(TNode<T>* pNode, int key);
@@ -111,6 +114,12 @@ bool List<T>::operator==(const List<T>& list) const {
         curr2 = curr2->pNext;
     }
     return (curr1 == nullptr && curr2 == nullptr);
+}
+
+template<typename T>
+inline TNode<T>* List<T>::getFirst() const
+{
+    return pFirst;
 }
 
 template <typename T>

@@ -19,6 +19,7 @@ public:
     void insertBefore(TNode<T>* pNode, int key);
     void remove(int key);
     void removefirst();
+    virtual void clear();
 };
 
 template <typename T>
@@ -60,9 +61,7 @@ const HeadList<T>& HeadList<T>::operator=(const HeadList<T>& list) {
 
     while (this->pFirst != nullptr) {
         this->removefirst();
-    }
-
-    
+    }    
     TNode<T>* curr = list.pHead->pNext;  
     TNode<T>* tail = pHead;
 
@@ -157,4 +156,16 @@ void HeadList<T>::removefirst() {
     pHead->pNext = tmp->pNext;
     this->pFirst = pHead->pNext;  
     delete tmp;
+}
+
+template<typename T>
+void HeadList<T>::clear() {
+    TNode<T>* curr = pHead->pNext;
+    while (curr) {
+        TNode<T>* next = curr->pNext;
+        delete curr;
+        curr = next;
+    }
+    pHead->pNext = nullptr;
+    this->pFirst = nullptr;
 }

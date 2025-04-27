@@ -1,4 +1,4 @@
-﻿#include <iostream>
+﻿
 #include <string>
 #include "Polinom.h"
 
@@ -17,112 +17,80 @@ void showMenu() {
     cout << "Ваш выбор: ";
 }
 
-void clearInput() {
-    cin.clear();
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
-}
 
 int main() {
     setlocale(LC_ALL, "Russian");
 
-    while (true) {
-        try {
-            cout << "Введите полином (например: 2x2y + 3x - 5):\n";
-            string expr;
-            getline(cin, expr);
+    Polinom p1, p2, result;
+    int choice;
+    double scalar, x, y, z;
 
-            if (expr.empty()) {
-                cout << "Ошибка: пустой ввод\n";
-                continue;
-            }
+    cout << "Введите первый полином (формат: ..., через пробел, конец строки - конец ввода):\n";
+    cin >> p1;
+    cout << "p1 = " << p1 << endl;
 
-            Polinom p1(expr);
+    cout << "Введите второй полином:\n";
+    cin >> p2;
+    cout << "p2 = " << p2 << endl;
 
-            showMenu();
-            int choice;
-            cin >> choice;
-            clearInput();
+    do {
+        showMenu();
+        cin >> choice;
 
-            if (choice == 0) break;
+        switch (choice) {
+        case 1:
+            result = p1 + p2;
+            cout << "Результат сложения: " << result << endl;
+            break;
 
-            switch (choice) {
-            case 1: {
-                cout << "Введите второй полином:\n";
-                string expr2;
-                getline(cin, expr2);
-                Polinom p2(expr2);
-                Polinom res = p1 + p2;
-                cout << "Результат: " << res << "\n";
-                break;
-            }
-            case 2: {
-                cout << "Введите второй полином:\n";
-                string expr2;
-                getline(cin, expr2);
-                Polinom p2(expr2);
-                Polinom res = p1 - p2;
-                cout << "Результат: " << res << "\n";
-                break;
-            }
-            case 3: {
-                cout << "Введите второй полином:\n";
-                string expr2;
-                getline(cin, expr2);
-                Polinom p2(expr2);
-                Polinom res = p1 * p2;
-                cout << "Результат: " << res << "\n";
-                break;
-            }
-            case 4: {
-                cout << "Введите константу: ";
-                double k;
-                cin >> k;
-                clearInput();
-                Polinom res = p1 * k;
-                cout << "Результат: " << res << "\n";
-                break;
-            }
-            case 5: {
-                cout << "Введите второй полином:\n";
-                string expr2;
-                getline(cin, expr2);
-                Polinom p2(expr2);
-                cout << (p1 == p2 ? "Полиномы равны\n" : "Полиномы не равны\n");
-                break;
-            }
-            case 6: {
-                cout << "Введите второй полином:\n";
-                string expr2;
-                getline(cin, expr2);
-                Polinom p2(expr2);
-                cout << (p1 != p2 ? "Полиномы разные\n" : "Полиномы одинаковые\n");
-                break;
-            }
-            case 7: {
-                cout << "Введите x, y, z через пробел: ";
-                double x, y, z;
-                cin >> x >> y >> z;
-                clearInput();
-                double res = p1.evaluate(x, y, z);
-                cout << "Значение полинома: " << res << "\n";
-                break;
-            }
-            default:
-                cout << "Неверный выбор\n";
-                break;
-            }
-        }
-        catch (const exception& e) {
-            cout << "Ошибка: " << e.what() << endl;
-            clearInput();
+        case 2:
+            result = p1 - p2;
+            cout << "Результат вычитания: " << result << endl;
+            break;
+
+        case 3:
+            result = p1 * p2;
+            cout << "Результат умножения: " << result << endl;
+            break;
+
+        case 4:
+            cout << "Введите константу: ";
+            cin >> scalar;
+            result = p1 * scalar;
+            cout << "Результат умножения первого полинома на " << scalar << ": " << result << endl;
+            break;
+
+        case 5:
+            if (p1 == p2)
+                cout << "Полиномы равны.\n";
+            else
+                cout << "Полиномы не равны.\n";
+            break;
+
+        case 6:
+            if (p1 != p2)
+                cout << "Полиномы различны.\n";
+            else
+                cout << "Полиномы одинаковы.\n";
+            break;
+
+        case 7:
+            cout << "Введите значения переменных x, y, z через пробел: ";
+            cin >> x >> y >> z;
+            cout << "Значение первого полинома: " << p1.evaluate(x, y, z) << endl;
+            cout << "Значение второго полинома: " << p2.evaluate(x, y, z) << endl;
+            break;
+
+        case 0:
+            cout << "Выход.\n";
+            break;
+
+        default:
+            cout << "Неверный выбор. Попробуйте снова.\n";
+            break;
         }
 
-        cout << "\nПродолжить? (1 - да, 0 - нет): ";
-        int cont;
-        cin >> cont;
-        clearInput();
-        if (cont == 0) break;
-    }
+    } while (choice != 0);
 
     return 0;
 }
