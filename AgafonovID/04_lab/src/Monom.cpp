@@ -10,6 +10,14 @@ Monom::Monom() {
 
 Monom::Monom(double c, int d) {
     coef = c;
+
+    int deg_x = d / 100;      // Степень x
+    int deg_y = (d / 10) % 10; // Степень y
+    int deg_z = d % 10;        // Степень z
+
+    if (deg_x > 9 || deg_y > 9 || deg_z > 9) {
+        throw std::runtime_error("Degree of any variable must be <= 9");
+    }
     if (d >= 0 && d <= 999) {
         degree = d;
     }
@@ -61,14 +69,16 @@ bool Monom::operator<=(const Monom& m) const {
 
 std::string Monom::Monom_tostr() const {
     std::string s;
+    bool is_first_term = (s.empty());
     if (coef > 0) {
-        s += "+";
+        if (!is_first_term) {
+            s += "+";  
+        }
         if (coef != 1 || degree == 0) {
             std::stringstream ss;
             ss << std::defaultfloat << coef;
             s += ss.str();
         }
-       
     }
     else if (coef < 0) {
         if (coef != -1 || degree == 0) {
@@ -76,46 +86,31 @@ std::string Monom::Monom_tostr() const {
             ss << std::defaultfloat << coef;
             s += ss.str();
         }
-        else {  
-            s += "-";
+        else {
+            s += "-";  
         }
     }
     else {
-        return "";
+        return ""; 
     }
     int tmp = degree;
-    if (tmp / 100) {
-
-        if ((tmp / 100) == 1) {
-            s += "x";
-        }
-        else {
-            std::string xd = "x^";
-            xd += '0' + tmp / 100;
-            s += xd;
+    if (tmp / 100) {  
+        s += "x";
+        if (tmp / 100 != 1) {
+            s += "^" + std::to_string(tmp / 100);
         }
     }
-    if ((tmp - 100 * (tmp / 100)) / 10) {
-
-        if (((tmp - 100 * (tmp / 100)) / 10) == 1) {
-            s += "y";
-        }
-        else {
-            std::string yd = "y^";
-            yd += '0' + ((tmp - 100 * (tmp / 100)) / 10);
-            s += yd;
+    if ((tmp % 100) / 10) {
+        s += "y";
+        if ((tmp % 100) / 10 != 1) {
+            s += "^" + std::to_string((tmp % 100) / 10);
         }
     }
-    if (tmp % 10) {
-        if ((tmp % 10) == 1) {
-            s += "z";
+    if (tmp % 10) {  
+        s += "z";
+        if (tmp % 10 != 1) {
+            s += "^" + std::to_string(tmp % 10);
         }
-        else {
-            std::string zd = "z^";
-            zd += '0' + tmp % 10;
-            s += zd;
-        }
-
     }
 
     return s;

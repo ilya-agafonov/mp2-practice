@@ -33,8 +33,9 @@ RingList<T>::RingList(const RingList<T>& list) : RingList<T>() {
 template<typename T>
 RingList<T>::~RingList() {
     clear();
-    delete this->pHead;
+    delete this->pHead;  
     this->pHead = nullptr;
+    this->pFirst = nullptr;
 }
 
 template<typename T>

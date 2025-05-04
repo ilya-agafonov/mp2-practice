@@ -8,6 +8,7 @@ Polinom::Polinom() {
 }
 
 Polinom::Polinom(const std::string& expr) {
+    //std::cout << "Parsing: " << expr << std::endl;
     std::string str = expr;
     str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
 
@@ -21,13 +22,16 @@ Polinom::Polinom(const std::string& expr) {
         else if (str[pos] == '+') {
             pos++;
         }
+
         double coef = 1.0;
         if (isdigit(str[pos]) || str[pos] == '.') {
             size_t end_pos;
             coef = stod(str.substr(pos), &end_pos);
             pos += end_pos;
         }
-        if (negative) coef = -coef;
+        if (negative) { 
+            coef = -coef;
+        }
         int deg_x = 0, deg_y = 0, deg_z = 0;
         while (pos < str.length() && (str[pos] == 'x' || str[pos] == 'y' || str[pos] == 'z')) {
             char var = str[pos++];
@@ -36,10 +40,19 @@ Polinom::Polinom(const std::string& expr) {
             if (pos < str.length() && str[pos] == '^') {
                 pos++;
                 if (pos >= str.length() || !isdigit(str[pos])) {
-                    throw std::runtime_error("Invalid degree");
+                    throw std::exception("Invalid degree");
                 }
                 degree = str[pos++] - '0';
+                while (pos < str.length() && isdigit(str[pos])) {
+                    degree = degree * 10 + (str[pos] - '0');
+                    pos++;
+                }
+                if (degree > 9) {
+                    throw std::exception("degree > 9");
+                }
+
             }
+            
 
             if (var == 'x') deg_x = degree;
             else if (var == 'y') deg_y = degree;
@@ -47,6 +60,10 @@ Polinom::Polinom(const std::string& expr) {
         }
 
         int total_degree = deg_x * 100 + deg_y * 10 + deg_z;
+        if (total_degree < 0 || total_degree > 999) {
+            throw std::exception("Degree out of range (0-999)");
+        }
+
         insert(Monom(coef, total_degree));
     }
 }
@@ -57,7 +74,6 @@ Polinom::~Polinom() {}
 
 void Polinom::insert(const Monom& m) {
     if (m.getCoef() == 0.0) return;
-
     if (this->pFirst == this->pHead) {
         this->pushBack(m);
         return;
@@ -70,13 +86,13 @@ void Polinom::insert(const Monom& m) {
         prev = curr;
         curr = curr->pNext;
     }
-
     if (curr != this->pHead && curr->data.getDegree() == m.getDegree()) {
         double newCoef = curr->data.getCoef() + m.getCoef();
-        if (newCoef == 0) {
+        if (newCoef == 0.0) {
             prev->pNext = curr->pNext;
-            if (curr == this->pFirst)
+            if (curr == this->pFirst) {
                 this->pFirst = prev->pNext;
+            }
             delete curr;
         }
         else {
