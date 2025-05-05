@@ -36,6 +36,8 @@ public:
     void insertAfter(TNode<T>* pNode, int key);
     void insertBefore(TNode<T>* pNode, int key);
     void remove(int key);
+    T GetFirst() const { return pFirst->data; };
+    T GetCurr() const { return pCurr->data; };
     T reset() const;
     void removefirst();
     bool IsEmpty() const;

@@ -11,12 +11,12 @@ Monom::Monom() {
 Monom::Monom(double c, int d) {
     coef = c;
 
-    int deg_x = d / 100;      // Степень x
-    int deg_y = (d / 10) % 10; // Степень y
-    int deg_z = d % 10;        // Степень z
+    int deg_x = d / 100;      
+    int deg_y = (d / 10) % 10; 
+    int deg_z = d % 10;       
 
     if (deg_x > 9 || deg_y > 9 || deg_z > 9) {
-        throw std::runtime_error("Degree of any variable must be <= 9");
+        throw std::exception("degree must <= 9");
     }
     if (d >= 0 && d <= 999) {
         degree = d;
