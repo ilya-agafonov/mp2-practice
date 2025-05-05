@@ -4,14 +4,19 @@
 #include "Monom.h"
 #include <iostream>
 #include <cmath>
+#include <string>
 
-class Polinom : public RingList<Monom> {
+class Polinom {
+private:
+    RingList<Monom> monom;  
+    std::string expression;   
+
+    void updateExpression();  
 
 public:
     Polinom();
     Polinom(const std::string& expr);
-    Polinom(const Polinom& list);
-    ~Polinom();
+    Polinom(const Polinom& other);
 
     void insert(const Monom& m);
 
@@ -26,5 +31,5 @@ public:
     double evaluate(double x, double y, double z) const;
 
     friend std::ostream& operator<<(std::ostream& out, const Polinom& p);
-    friend std::istream& operator>>(std::istream&, Polinom&);
+    friend std::istream& operator>>(std::istream& in, Polinom& p);
 };

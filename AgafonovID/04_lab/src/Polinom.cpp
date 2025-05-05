@@ -1,14 +1,11 @@
-#pragma once
-#include <string>
-#include <sstream>
 #include "Polinom.h"
+#include <sstream>
+#include <algorithm>
 
-Polinom::Polinom() {
-    
-}
+Polinom::Polinom() : expression("0") {}
 
 Polinom::Polinom(const std::string& expr) {
-    //std::cout << "Parsing: " << expr << std::endl;
+    //std::cout << "expr: " << expr << std::endl;
     std::string str = expr;
     str.erase(std::remove(str.begin(), str.end(), ' '), str.end());
 
@@ -29,9 +26,10 @@ Polinom::Polinom(const std::string& expr) {
             coef = stod(str.substr(pos), &end_pos);
             pos += end_pos;
         }
-        if (negative) { 
+        if (negative) {
             coef = -coef;
         }
+
         int deg_x = 0, deg_y = 0, deg_z = 0;
         while (pos < str.length() && (str[pos] == 'x' || str[pos] == 'y' || str[pos] == 'z')) {
             char var = str[pos++];
@@ -40,7 +38,7 @@ Polinom::Polinom(const std::string& expr) {
             if (pos < str.length() && str[pos] == '^') {
                 pos++;
                 if (pos >= str.length() || !isdigit(str[pos])) {
-                    throw std::exception("Invalid degree");
+                    throw std::runtime_error("Invalid degree");
                 }
                 degree = str[pos++] - '0';
                 while (pos < str.length() && isdigit(str[pos])) {
@@ -48,11 +46,9 @@ Polinom::Polinom(const std::string& expr) {
                     pos++;
                 }
                 if (degree > 9) {
-                    throw std::exception("degree > 9");
+                    throw std::runtime_error("Degree > 9");
                 }
-
             }
-            
 
             if (var == 'x') deg_x = degree;
             else if (var == 'y') deg_y = degree;
@@ -61,37 +57,62 @@ Polinom::Polinom(const std::string& expr) {
 
         int total_degree = deg_x * 100 + deg_y * 10 + deg_z;
         if (total_degree < 0 || total_degree > 999) {
-            throw std::exception("Degree out of range (0-999)");
+            throw std::runtime_error("Degree out of range (0-999)");
         }
 
         insert(Monom(coef, total_degree));
     }
+    updateExpression();
 }
 
-Polinom::Polinom(const Polinom& list) : RingList<Monom>(list) {}
+Polinom::Polinom(const Polinom& other) : monom(other.monom) {
+    updateExpression();
+}
 
-Polinom::~Polinom() {}
+void Polinom::updateExpression() {
+    std::ostringstream oss;
+    if (monom.isEmpty()) {
+        oss << "0";
+    }
+    else {
+        bool firstTerm = true;
+        TNode<Monom>* curr = monom.getFirst();
+        while (curr != monom.getHead()) {
+            std::string monomStr = curr->data.Monom_tostr();
+            if (!firstTerm && monomStr[0] != '-') {
+                oss << "+";
+            }
+            oss << monomStr;
+            curr = curr->pNext;
+            firstTerm = false;
+        }
+    }
+    expression = oss.str();
+}
 
 void Polinom::insert(const Monom& m) {
     if (m.getCoef() == 0.0) return;
-    if (this->pFirst == this->pHead) {
-        this->pushBack(m);
+
+    if (monom.isEmpty()) {
+        monom.pushBack(m);
+        updateExpression();
         return;
     }
 
-    TNode<Monom>* prev = this->pHead;
-    TNode<Monom>* curr = this->pFirst;
+    TNode<Monom>* prev = monom.getHead();
+    TNode<Monom>* curr = monom.getFirst();
 
-    while (curr != this->pHead && curr->data > m) {
+    while (curr != monom.getHead() && curr->data > m) {
         prev = curr;
         curr = curr->pNext;
     }
-    if (curr != this->pHead && curr->data.getDegree() == m.getDegree()) {
+
+    if (curr != monom.getHead() && curr->data.getDegree() == m.getDegree()) {
         double newCoef = curr->data.getCoef() + m.getCoef();
         if (newCoef == 0.0) {
             prev->pNext = curr->pNext;
-            if (curr == this->pFirst) {
-                this->pFirst = prev->pNext;
+            if (curr == monom.getFirst()) {
+                monom.setFirst(prev->pNext);
             }
             delete curr;
         }
@@ -103,16 +124,17 @@ void Polinom::insert(const Monom& m) {
         TNode<Monom>* newNode = new TNode<Monom>(m);
         prev->pNext = newNode;
         newNode->pNext = curr;
-        if (prev == this->pHead) {
-            this->pFirst = newNode;
+        if (prev == monom.getHead()) {
+            monom.setFirst(newNode);
         }
     }
+    updateExpression();
 }
 
 Polinom Polinom::operator+(const Polinom& other) const {
     Polinom res(*this);
-    TNode<Monom>* curr = other.pFirst;
-    while (curr != other.pHead) {
+    TNode<Monom>* curr = other.monom.getFirst();
+    while (curr != other.monom.getHead()) {
         res.insert(curr->data);
         curr = curr->pNext;
     }
@@ -121,8 +143,8 @@ Polinom Polinom::operator+(const Polinom& other) const {
 
 Polinom Polinom::operator-(const Polinom& other) const {
     Polinom res(*this);
-    TNode<Monom>* curr = other.pFirst;
-    while (curr != other.pHead) {
+    TNode<Monom>* curr = other.monom.getFirst();
+    while (curr != other.monom.getHead()) {
         res.insert(Monom(-curr->data.getCoef(), curr->data.getDegree()));
         curr = curr->pNext;
     }
@@ -131,10 +153,10 @@ Polinom Polinom::operator-(const Polinom& other) const {
 
 Polinom Polinom::operator*(const Polinom& other) const {
     Polinom res;
-    TNode<Monom>* curr1 = this->pFirst;
-    while (curr1 != this->pHead) {
-        TNode<Monom>* curr2 = other.pFirst;
-        while (curr2 != other.pHead) {
+    TNode<Monom>* curr1 = this->monom.getFirst();
+    while (curr1 != this->monom.getHead()) {
+        TNode<Monom>* curr2 = other.monom.getFirst();
+        while (curr2 != other.monom.getHead()) {
             res.insert(curr1->data * curr2->data);
             curr2 = curr2->pNext;
         }
@@ -145,43 +167,43 @@ Polinom Polinom::operator*(const Polinom& other) const {
 
 Polinom Polinom::operator*(double scalar) const {
     Polinom res;
-    TNode<Monom>* curr = this->pFirst;
-    while (curr != this->pHead) {
+    TNode<Monom>* curr = this->monom.getFirst();
+    while (curr != this->monom.getHead()) {
         res.insert(curr->data * scalar);
         curr = curr->pNext;
     }
     return res;
 }
 
-
 bool Polinom::operator==(const Polinom& other) const {
-    TNode<Monom>* curr1 = this->pFirst;
-    TNode<Monom>* curr2 = other.pFirst;
-    while (curr1 != this->pHead && curr2 != other.pHead) {
+    TNode<Monom>* curr1 = this->monom.getFirst();
+    TNode<Monom>* curr2 = other.monom.getFirst();
+    while (curr1 != this->monom.getHead() && curr2 != other.monom.getHead()) {
         if (!(curr1->data == curr2->data))
             return false;
         curr1 = curr1->pNext;
         curr2 = curr2->pNext;
     }
-    return (curr1 == this->pHead && curr2 == other.pHead);
-}
-
-bool Polinom::operator!=(const Polinom& other) const {
-    return !(*this == other);
+    return (curr1 == this->monom.getHead() && curr2 == other.monom.getHead());
 }
 
 Polinom& Polinom::operator=(const Polinom& other) {
     if (this == &other) {
         return *this;
     }
-    RingList<Monom>::operator=(other);
+    monom = other.monom;
+    updateExpression();
     return *this;
+}
+
+bool Polinom::operator!=(const Polinom& other) const {
+    return !(*this == other);
 }
 
 double Polinom::evaluate(double x, double y, double z) const {
     double sum = 0.0;
-    TNode<Monom>* curr = this->pFirst;
-    while (curr != this->pHead) {
+    TNode<Monom>* curr = this->monom.getFirst();
+    while (curr != this->monom.getHead()) {
         sum += curr->data(x, y, z);
         curr = curr->pNext;
     }
@@ -189,28 +211,10 @@ double Polinom::evaluate(double x, double y, double z) const {
 }
 
 std::ostream& operator<<(std::ostream& out, const Polinom& p) {
-    if (p.pFirst == p.pHead) {
-        out << "0";
-        return out;
-    }
-
-    TNode<Monom>* curr = p.pFirst;
-    bool firstTerm = true;
-
-    while (curr != p.pHead) {
-        std::string monomStr = curr->data.Monom_tostr();
-
-        if (!firstTerm && monomStr[0] != '-') {
-            out << "+";
-        }
-
-        out << monomStr;
-        curr = curr->pNext;
-        firstTerm = false;
-    }
-
+    out << p.expression;
     return out;
 }
+
 std::istream& operator>>(std::istream& in, Polinom& p) {
     std::string expr;
     std::getline(in, expr);

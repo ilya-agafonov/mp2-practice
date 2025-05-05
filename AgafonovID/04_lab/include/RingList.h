@@ -11,6 +11,11 @@ public:
     RingList<T>& operator=(const RingList<T>& list);
     void pushBack(T data); 
     void clear();         
+
+    bool isEmpty() const { return pFirst == pHead; }
+    TNode<T>* getFirst() const { return pFirst; }
+    TNode<T>* getHead() const { return pHead; }
+    void setFirst(TNode<T>* node) { pFirst = node; }
     
 };
 
