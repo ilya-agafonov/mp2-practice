@@ -28,7 +28,7 @@ public:
     bool operator==(const Polinom& other) const;
     bool operator!=(const Polinom& other) const;
 
-    double evaluate(double x, double y, double z) const;
+    double evaluate(double x, double y, double z) const; // TODO: double operator()(double x, double y, double z)
 
     friend std::ostream& operator<<(std::ostream& out, const Polinom& p);
     friend std::istream& operator>>(std::istream& in, Polinom& p);

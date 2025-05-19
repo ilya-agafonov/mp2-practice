@@ -6,17 +6,10 @@ class RingList : public HeadList<T> {
 public:
     RingList();
     RingList(const RingList<T>& list);
-    ~RingList();
-
-    RingList<T>& operator=(const RingList<T>& list);
+ 
     void pushBack(T data); 
-    void clear();         
-
-    bool isEmpty() const { return pFirst == pHead; }
-    TNode<T>* getFirst() const { return pFirst; }
-    TNode<T>* getHead() const { return pHead; }
-    void setFirst(TNode<T>* node) { pFirst = node; }
-    
+    void clear();
+    // TODO: ???
 };
 
 template<typename T>

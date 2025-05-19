@@ -5,19 +5,13 @@
 #include <sstream>
 
 
-class Monom {
-private:
+struct Monom {
     double coef;
     int degree;     
-public:
+
     Monom();
     Monom(double c, int d);
     Monom(const Monom&);
-    double getCoef() const;
-    int getDegree() const;
-
-    void setCoef(double c);
-    void setDegree(int d);
 
     bool operator==(const Monom& other) const;
     bool operator!=(const Monom& other) const;
