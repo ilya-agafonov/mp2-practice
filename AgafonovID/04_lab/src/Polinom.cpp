@@ -38,7 +38,7 @@ Polinom::Polinom(const std::string& expr) {
             if (pos < str.length() && str[pos] == '^') {
                 pos++;
                 if (pos >= str.length() || !isdigit(str[pos])) {
-                    throw std::runtime_error("Invalid degree");
+                    throw std::exception("Invalid degree");
                 }
                 degree = str[pos++] - '0';
                 while (pos < str.length() && isdigit(str[pos])) {
@@ -46,7 +46,7 @@ Polinom::Polinom(const std::string& expr) {
                     pos++;
                 }
                 if (degree > 9) {
-                    throw std::runtime_error("Degree > 9");
+                    throw std::exception("Degree > 9");
                 }
             }
 
@@ -57,7 +57,7 @@ Polinom::Polinom(const std::string& expr) {
 
         int total_degree = deg_x * 100 + deg_y * 10 + deg_z;
         if (total_degree < 0 || total_degree > 999) {
-            throw std::runtime_error("Degree out of range (0-999)");
+            throw std::exception("Degree out of range (0-999)");
         }
 
         insert(Monom(coef, total_degree));
