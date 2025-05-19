@@ -7,7 +7,7 @@ TEST(List, can_create_empty_list) {
 
 TEST(List, created_list_is_empty) {
     List<int> l;
-    EXPECT_TRUE(l.IsEmpty());
+    EXPECT_EQ(true, l.IsEmpty());
 }
 
 TEST(List, can_push_front_to_list) {
@@ -22,6 +22,13 @@ TEST(List, can_push_back_to_list) {
     TNode<int>* node1 = new TNode<int>(5);
     l.pushFront(node1);
     EXPECT_EQ(5, l.reset());
+}
+
+TEST(List, size_returns_correct_value) {
+    List<int> list;
+    list.pushBack(new TNode<int>(1));
+    list.pushBack(new TNode<int>(2));
+    EXPECT_EQ(list.Size(), 2);
 }
 
 TEST(List, can_insert_after_node) {
@@ -51,6 +58,12 @@ TEST(List, can_remove_node_by_key) {
     l.pushFront(node1);
     l.pushBack(node2);
     ASSERT_NO_THROW(l.remove(10));
+}
+
+TEST(List, RemoveThrowsIfNotFound) {
+    List<int> list;
+    list.pushBack(new TNode<int>(1));
+    ASSERT_ANY_THROW(list.remove(2));
 }
 
 TEST(List, removed_node_changes_list) {
@@ -101,7 +114,7 @@ TEST(List, copied_list_is_equal_to_original) {
     TNode<int>* node = new TNode<int>(5);
     l1.pushFront(node);
     List<int> l2 = l1;
-    EXPECT_TRUE(l1 == l2);
+    EXPECT_EQ(true, l1 == l2);
 }
 
 TEST(List, can_assign_list) {
@@ -118,27 +131,32 @@ TEST(List, assigned_list_is_equal_to_original) {
     l1.pushFront(node);
     List<int> l2;
     l2 = l1;
-    EXPECT_TRUE(l1 == l2);
+    EXPECT_EQ(true, l1 == l2);
 }
 
 TEST(List, can_check_if_list_is_empty) {
     List<int> l;
-    EXPECT_TRUE(l.IsEmpty());
+    ASSERT_NO_THROW(l.IsEmpty());
 }
 
-TEST(List, can_get_size_of_list) {
-    List<int> l;
-    TNode<int>* node1 = new TNode<int>(5);
-    TNode<int>* node2 = new TNode<int>(10);
-    l.pushFront(node1);
-    l.pushBack(node2);
-    EXPECT_EQ(2, l.Size());
+TEST(ListTest, AssignmentOperatorWorksCorrectly) {
+    List<int> list;
+    list.pushBack(new TNode<int>(3));
+    List<int> list2;
+    list2 = list;
+    EXPECT_EQ(true, list2 == list);
 }
 
-TEST(List, compare_equal_lists_is_true) {
-    List<int> l1, l2;
-    TNode<int>* node = new TNode<int>(5);
-    l1.pushFront(node);
-    l2.pushFront(new TNode<int>(5));
-    EXPECT_TRUE(l1 == l2);
+TEST(List, returns_false_if_different) {
+    List<int> list1;
+    list1.pushBack(new TNode<int>(1));
+    List<int> list2;
+    list2.pushBack(new TNode<int>(2));
+    EXPECT_EQ(false, list1 == list2);
+}
+
+TEST(List, can_getFirst) {
+    List<int> list;
+    list.pushBack(new TNode<int>(42));
+    EXPECT_EQ(list.getFirst()->data, 42);
 }

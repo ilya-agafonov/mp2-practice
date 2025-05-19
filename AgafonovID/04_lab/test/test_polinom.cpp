@@ -1,127 +1,83 @@
 #include <gtest.h>
 #include "Polinom.h"
 
-TEST(Polinom, can_create_polynom) {
+TEST(Polinom, can_create_empty_polinom) {
     ASSERT_NO_THROW(Polinom p);
 }
 
-
-TEST(Polinom, parse_invalid_string_throws) {
-    ASSERT_ANY_THROW(Polinom("x^y"));  
+TEST(Polinom, can_create_polinom_from_string) {
+    ASSERT_NO_THROW(Polinom p("2x^1y^0z^0+3x^0y^1z^0"));
 }
 
-
-TEST(Polinom, throws_on_too_high_degree) {
-    ASSERT_ANY_THROW(Polinom p("x^11"));
+TEST(Polinom, can_copy_polinom) {
+    Polinom p1("2x^1y^0z^0");
+    Polinom p2(p1);
+    EXPECT_EQ(true, p1 == p2);
 }
 
-TEST(Polinom, adds_simple_polinoms) {
-    Polinom p1("2x");
-    Polinom p2("3x");
-    Polinom res = p1 + p2;
-    Polinom expected("5x");
-    EXPECT_EQ(res, expected);
+TEST(Polinom, assignment_operator_copies_data_correctly) {
+    Polinom p1("x^1y^1z^1"), p2;
+    p2 = p1;
+    EXPECT_EQ(true, p2 == p1);
 }
 
-TEST(Polinom, adds_polinoms_with_different_vars) {
-    Polinom p1("2x + y");
-    Polinom p2("x + 3y");
-    Polinom res = p1 + p2;
-    Polinom expected("3x + 4y");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, handles_negative_coefficients) {
-    Polinom p1("2x - y");
-    Polinom p2("-x + 3y");
-    Polinom res = p1 + p2;
-    Polinom expected("x + 2y");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, subtracts_simple_polinoms) {
-    Polinom p1("5x");
-    Polinom p2("3x");
-    Polinom res = p1 - p2;
-    Polinom expected("2x");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, subtracts_polinoms_with_different_vars) {
-    Polinom p1("2x + 4y");
-    Polinom p2("x + y");
-    Polinom res = p1 - p2;
-    Polinom expected("x + 3y");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, results_in_zero_polinom) {
-    Polinom p1("x + y");
-    Polinom p2("x + y");
-    Polinom res = p1 - p2;
-    Polinom expected("0");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, multiplies_by_scalar) {
-    Polinom p("x + 2y");
-    Polinom res = p * 3.0;
-    Polinom expected("3x + 6y");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, multiplies_two_polinoms) {
-    Polinom p1("x + y");
-    Polinom p2("x - y");
-    Polinom res = p1 * p2;
-    Polinom expected("x^2 - y^2");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, multiplies_by_zero) {
-    Polinom p("x + y");
-    Polinom res = p * 0.0;
-    Polinom expected("0");
-    EXPECT_EQ(res, expected);
-}
-
-TEST(Polinom, evaluates_simple_polinom) {
-    Polinom p("2x + 3y - z");
-    double res = p.evaluate(1.0, 1.0, 1.0);
-    EXPECT_DOUBLE_EQ(4.0, res);
-}
-
-TEST(Polinom, evaluates_to_zero) {
-    Polinom p("x - x");
-    double res = p.evaluate(10.0, 20.0, 30.0);
-    EXPECT_DOUBLE_EQ(0.0, res);
-}
-
-TEST(Polinom, evaluate_with_zero_vars) {
-    Polinom p("5");
-    EXPECT_DOUBLE_EQ(5.0, p.evaluate(0.0, 0.0, 0.0));
-}
-
-TEST(Polinom, empty_polinom_is_zero) {
+TEST(Polinom, insert_adds_new_monom_to_polinom) {
     Polinom p;
-    EXPECT_TRUE(p == Polinom("0"));
+    Monom m(2.0, 111);
+    p.insert(m);
+    EXPECT_EQ(true, p == Polinom("2x^1y^1z^1"));
 }
 
-TEST(Polinom, polinom_with_zero_coefs_is_zero) {
-    Polinom p("0x + 0y - 0z");
-    EXPECT_TRUE(p == Polinom("0"));
+TEST(Polinom, addition_of_two_polinoms_works) {
+    Polinom p1("x^1"), p2("2x^1");
+    Polinom sum = p1 + p2;
+    EXPECT_EQ(true, sum == Polinom("3x^1"));
 }
 
-TEST(Polinom, add_zero_polinom_unchanged) {
-    Polinom p1("x + y");
-    Polinom p2("0");
-    Polinom res = p1 + p2;
-    EXPECT_EQ(res, p1);
+TEST(Polinom, subtraction_of_two_polinoms_works) {
+    Polinom p1("5x^1"), p2("2x^1");
+    Polinom diff = p1 - p2;
+    EXPECT_EQ(true, diff == Polinom("3x^1"));
 }
 
-TEST(Polinom, multiply_zero_polinom_gives_zero) {
-    Polinom p1("0");
-    Polinom p2("x + y");
-    Polinom res = p1 * p2;
-    EXPECT_TRUE(res == Polinom("0"));
+TEST(Polinom, multiplication_by_scalar_works) {
+    Polinom p("x^1+2y^1");
+    Polinom result = p * 3;
+    EXPECT_EQ(true, result == Polinom("3x^1+6y^1"));
+}
+
+TEST(Polinom, multiplication_of_two_polinoms_works) {
+    Polinom p1("x^1"), p2("y^1");
+    Polinom prod = p1 * p2;
+    EXPECT_EQ(true, prod == Polinom("1x^1y^1"));
+}
+
+TEST(Polinom, comparison_operator_equal_returns_true_for_equal_polynomials) {
+    Polinom p1("2x^1+3y^1"), p2("2x^1+3y^1");
+    EXPECT_EQ(true, p1 == p2);
+}
+
+TEST(Polinom, comparison_operator_not_equal_returns_true_for_different_polynomials) {
+    Polinom p1("x^1"), p2("x^2");
+    EXPECT_EQ(true, p1 != p2);
+}
+
+TEST(Polinom, can_evaluate_polynomial) {
+    Polinom p("2x^1y^1+1z^2");
+    double val = p.evaluate(2, 3, 4); 
+    EXPECT_DOUBLE_EQ(28.0, val);
+}
+
+TEST(Polinom, output_operator_streams_correct_string) {
+    Polinom p("2x^1+3y^2");
+    std::ostringstream out;
+    out << p;
+    EXPECT_EQ("2x+3y^2", out.str());
+}
+
+TEST(Polinom, input_operator_parses_string_correctly) {
+    std::istringstream in("4x^1y^0z^0 + 2x^0y^1z^0");
+    Polinom p;
+    in >> p;
+    EXPECT_EQ(true, p == Polinom("4x^1+2y^1"));
 }

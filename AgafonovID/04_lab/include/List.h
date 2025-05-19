@@ -23,7 +23,6 @@ protected:
     TNode<T>* pLast;
 public:
     List();
-    List(const T& list);
     List(const List<T>&);
     ~List();
 
@@ -37,7 +36,7 @@ public:
     void insertBefore(TNode<T>* pNode, int key);
     void remove(int key);
     T GetFirst() const { return pFirst->data; };
-    T GetCurr() const { return pCurr->data; };
+    T GetCurr() const { return ñurr->data; };
     T reset() const;
     void removefirst();
     bool IsEmpty() const;
@@ -53,11 +52,6 @@ List<T>::List() {
     pLast = nullptr;
 }
 
-template <typename T>
-List<T>::List(const T& list) {
-    pFirst = new ListNode<T>(x);
-
-}
 
 template <typename T>
 List<T>::List(const List<T>& list) {

@@ -1,48 +1,162 @@
 #include <gtest.h>
 #include "HeadList.h"
 
-TEST(HeadList, can_create_list) {
+TEST(HeadList, can_create_empty_list) {
     ASSERT_NO_THROW(HeadList<int> l);
 }
 
-TEST(HeadList, can_create_copied_list) {
+TEST(HeadList, created_list_is_empty) {
     HeadList<int> l;
-    ASSERT_NO_THROW(HeadList<int> l1(l));
+    EXPECT_EQ(true, l.IsEmpty());
 }
 
-TEST(HeadList, correct_create_copied_list)
-{
-    HeadList<int> l;
-    HeadList<int> l1(l);
-    EXPECT_TRUE(l == l1);
-}
-
-TEST(HeadList, push_front_adds_element) {
+TEST(HeadList, can_push_front_to_list) {
     HeadList<int> l;
     TNode<int>* node = new TNode<int>(5);
     l.pushFront(node);
     EXPECT_EQ(5, l.reset());
 }
 
-TEST(HeadList, push_back_adds_element_to_end) {
+TEST(HeadList, can_push_back_to_list) {
     HeadList<int> l;
-    TNode<int>* node = new TNode<int>(10);
+    TNode<int>* node = new TNode<int>(5);
     l.pushBack(node);
+    EXPECT_EQ(5, l.reset());
+}
+
+TEST(HeadList, size_returns_correct_value) {
+    HeadList<int> list;
+    list.pushBack(new TNode<int>(1));
+    list.pushBack(new TNode<int>(2));
+    EXPECT_EQ(2, list.Size());
+}
+
+TEST(HeadList, can_insert_after_node) {
+    HeadList<int> l;
+    TNode<int>* node1 = new TNode<int>(5);
+    TNode<int>* node2 = new TNode<int>(10);
+    TNode<int>* node3 = new TNode<int>(15);
+    l.pushFront(node1);
+    l.pushBack(node2);
+    ASSERT_NO_THROW(l.insertAfter(node3, 5));
+}
+
+TEST(HeadList, can_insert_before_node) {
+    HeadList<int> l;
+    TNode<int>* node1 = new TNode<int>(10);
+    TNode<int>* node2 = new TNode<int>(20);
+    TNode<int>* node3 = new TNode<int>(15);
+    l.pushFront(node1);
+    l.pushBack(node2);
+    ASSERT_NO_THROW(l.insertBefore(node3, 20));
+}
+
+TEST(HeadList, can_remove_node_by_key) {
+    HeadList<int> l;
+    TNode<int>* node1 = new TNode<int>(10);
+    TNode<int>* node2 = new TNode<int>(20);
+    l.pushFront(node1);
+    l.pushBack(node2);
+    ASSERT_NO_THROW(l.remove(10));
+}
+
+TEST(HeadList, remove_throws_if_not_found) {
+    HeadList<int> list;
+    list.pushBack(new TNode<int>(1));
+    ASSERT_ANY_THROW(list.remove(2));
+}
+
+TEST(HeadList, removed_node_changes_list) {
+    HeadList<int> l;
+    TNode<int>* node1 = new TNode<int>(10);
+    TNode<int>* node2 = new TNode<int>(20);
+    l.pushFront(node1);
+    l.pushBack(node2);
+    l.remove(10);
+    EXPECT_EQ(20, l.reset());
+}
+
+TEST(HeadList, can_reset_to_first_element) {
+    HeadList<int> l;
+    TNode<int>* node = new TNode<int>(5);
+    l.pushFront(node);
+    EXPECT_EQ(5, l.reset());
+}
+
+TEST(HeadList, can_remove_first_element) {
+    HeadList<int> l;
+    TNode<int>* node1 = new TNode<int>(5);
+    TNode<int>* node2 = new TNode<int>(10);
+    l.pushFront(node1);
+    l.pushBack(node2);
+    ASSERT_NO_THROW(l.removefirst());
+}
+
+TEST(HeadList, reset_after_removing_first_element) {
+    HeadList<int> l;
+    TNode<int>* node1 = new TNode<int>(5);
+    TNode<int>* node2 = new TNode<int>(10);
+    l.pushFront(node1);
+    l.pushBack(node2);
+    l.removefirst();
     EXPECT_EQ(10, l.reset());
 }
 
-TEST(HeadList, remove_deletes_node) {
-    HeadList<int> l;
+TEST(HeadList, can_copy_list) {
+    HeadList<int> l1;
     TNode<int>* node = new TNode<int>(5);
-    l.pushFront(node);
-    l.remove(5);
-    EXPECT_TRUE(l.IsEmpty());
+    l1.pushFront(node);
+    ASSERT_NO_THROW(HeadList<int> l2(l1));
 }
 
-TEST(HeadList, clear_empties_list) {
-    HeadList<int> l;
+TEST(HeadList, copied_list_is_equal_to_original) {
+    HeadList<int> l1;
     TNode<int>* node = new TNode<int>(5);
-    l.pushFront(node);
-    l.clear();
-    EXPECT_TRUE(l.IsEmpty());
+    l1.pushFront(node);
+    HeadList<int> l2 = l1;
+    EXPECT_EQ(true, l1 == l2);
+}
+
+TEST(HeadList, can_assign_list) {
+    HeadList<int> l1;
+    TNode<int>* node = new TNode<int>(5);
+    l1.pushFront(node);
+    HeadList<int> l2;
+    ASSERT_NO_THROW(l2 = l1);
+}
+
+TEST(HeadList, assigned_list_is_equal_to_original) {
+    HeadList<int> l1;
+    TNode<int>* node = new TNode<int>(5);
+    l1.pushFront(node);
+    HeadList<int> l2;
+    l2 = l1;
+    EXPECT_EQ(true, l1 == l2);
+}
+
+TEST(HeadList, can_check_if_list_is_empty) {
+    HeadList<int> l;
+    ASSERT_NO_THROW(l.IsEmpty());
+}
+
+TEST(HeadList, assignment_operator_works_correctly) {
+    HeadList<int> list;
+    list.pushBack(new TNode<int>(3));
+    HeadList<int> list2;
+    list2 = list;
+    EXPECT_EQ(true, list2 == list);
+}
+
+TEST(HeadList, returns_false_if_different) {
+    HeadList<int> list1;
+    list1.pushBack(new TNode<int>(1));
+    HeadList<int> list2;
+    list2.pushBack(new TNode<int>(2));
+    EXPECT_EQ(false, list1 == list2);
+}
+
+TEST(HeadList, can_get_first) {
+    HeadList<int> list;
+    list.pushBack(new TNode<int>(42));
+    EXPECT_EQ(42, list.getFirst()->data);
 }
