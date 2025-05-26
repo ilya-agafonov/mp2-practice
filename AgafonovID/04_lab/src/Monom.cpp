@@ -32,18 +32,11 @@ Monom::Monom(const Monom& m) {
     degree = m.degree;
 }
 
-double Monom::getCoef() const {
+double Monom::getCoef()  {
     return coef;
 }
-int Monom::getDegree() const { 
+int Monom::getDegree()  { 
     return degree;
-}
-
-void Monom::setCoef(double c) {
-    coef = c;
-}
-void Monom::setDegree(int d) {
-    degree = d;
 }
 
 bool Monom::operator==(const Monom& m) const {

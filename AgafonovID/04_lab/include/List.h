@@ -36,9 +36,10 @@ public:
     void insertAfter(TNode<T>* pNode, int key);
     void insertBefore(TNode<T>* pNode, int key);
     virtual void remove(int key);
-    T GetFirst() const { return pFirst->data; }; // TODO: ?
-    T GetCurr() const { return ñurr->data; };
-    T reset() const;
+
+    void reset();
+    void copy(const List<T>& list);
+    void clear();
     virtual void removefirst();
     bool IsEmpty() const;
     int Size() const;
@@ -56,47 +57,35 @@ List<T>::List() {
 
 template <typename T>
 List<T>::List(const List<T>& list) {
-    pFirst = nullptr;
-    if (list.pFirst != list.pStop) { // TODO: copy()
-        TNode<T>* tmp = list.pFirst;
-        while (tmp != list.pStop) {
-            pushBack(new TNode<T>(tmp->data));
-            tmp = tmp->pNext;
-        }
+    if (list.pFirst == nullptr) { // TODO: copy()
+        pFirst = nullptr;
+        return;
     }
+    copy(list);
+    pStop = nullptr;
 }
 
 template <typename T>
 List<T>::~List() {
-    while (pFirst != pStop) { // TODO: clear()
-        TNode<T>* tmp = pFirst;
-        pFirst = pFirst->pNext;
-        delete tmp;
-    }
+    reset();
+    clear();
+    pFirst = nullptr;
 }
 
 template <typename T>
 const List<T>& List<T>::operator=(const List<T>& list) {
+    List<T> listcopy(list);
     if (this == &list) {
         return *this;
     }
-    while (pFirst != nullptr) { // TODO: clear()
-        TNode<T>* tmp = pFirst;
-        pFirst = pFirst->pNext;
-        delete tmp;
+    if (pFirst != nullptr) { // TODO: clear()
+        clear();
     }
     if (list.pFirst == nullptr) { // TODO: copy()
         pFirst = nullptr;
         return *this;
     }
-    pFirst = new TNode<T>(list.pFirst->data);
-    TNode<T>* curr = pFirst;
-    TNode<T>* currList = list.pFirst->pNext;
-    while (currList != nullptr) {
-        curr->pNext = new TNode<T>(currList->data);
-        curr = curr->pNext;
-        currList = currList->pNext;
-    }
+    copy(listcopy)
     return *this;
 }
 template <typename T>
@@ -117,6 +106,23 @@ template<typename T>
 inline TNode<T>* List<T>::getFirst() const
 {
     return pFirst;
+}
+
+template<typename T>
+TNode<T>* List<T>::search(T key)
+{
+    if (IsEmpty()) {
+        return nullptr;
+    }
+    reset();
+    while (curr != pStop) {
+        if (curr->data == key) {
+            return curr;
+        }
+        prev = curr;
+        curr = curr->pNext;
+    }
+    return nullptr;
 }
 
 template <typename T>
@@ -144,10 +150,7 @@ void List<T>::pushBack(TNode<T>* pNode) {
 
 template <typename T>
 void List<T>::insertAfter(TNode<T>* pNode, int key) {
-    TNode<T>* curr = pFirst;
-    while ((curr != nullptr) && (curr->data != key)) { // TODO: search
-        curr = curr->pNext;
-    }
+    curr = search(key);
     if (curr == nullptr) {
         throw std::exception("curr nullptr");
     }
@@ -157,39 +160,36 @@ void List<T>::insertAfter(TNode<T>* pNode, int key) {
 
 template <typename T>
 void List<T>::insertBefore(TNode<T>* pNode, int key) {
-    TNode<T>* prev = nullptr, * curr = pFirst;
-    while (curr != nullptr && curr->data != key) { // TODO: search
-        prev = curr;
-        curr = curr->pNext;
+    reset();
+    if (curr->data == key)
+    {
+        pushFront(pNode);
+        return;
     }
+    curr = search(key);
+    
     if (curr == nullptr) {
         throw std::exception("Key not found");
     }
-    if (prev == nullptr) {
-        pNode->pNext = pFirst;
-        pFirst = pNode;
-        return;
-    }
+
     pNode->pNext = curr;
     prev->pNext = pNode;
 }
 
 template <typename T>
 void List<T>::remove(int key) {
-    if (pFirst == nullptr) {
-        throw std::exception("pFirst nullptr");
+    reset();
+    if (search(key) == nullptr) {
+        throw std::exception("key not found")
     }
-    TNode<T>* prev = nullptr, * curr = pFirst;
-    while (curr != nullptr && curr->data != key) { // TODO: search
-        prev = curr;
-        curr = curr->pNext;
+    if (pFirst->key == search(key)) { // TODO: removeFirst()
+        removefirst();
+        return;
     }
-    if (curr == nullptr) {
-        throw std::exception("Key not found");
-    }
-    if (prev == nullptr) { // TODO: removeFirst()
-        pFirst = pFirst->pNext;
-        delete curr;
+    curr = search(key);
+    if (curr == pLast) {
+        prev->pNext = curr->pNext;
+        pLast = prev;
         return;
     }
     prev->pNext = curr->pNext;
@@ -197,11 +197,32 @@ void List<T>::remove(int key) {
 }
 
 template <typename T>
-T List<T>::reset() const {
-    if (pFirst == nullptr) {
-        throw "Error";
+void List<T>::reset() {
+    curr = pFirst;
+    prev = nullptr;
+}
+
+template<typename T>
+void List<T>::copy(const List<T>& list){
+    pFirst = new TNode<T>(list.pFirst->data);
+    TNode<T>* curr = pFirst;
+    TNode<T>* currList = list.pFirst->pNext;
+    while (currList != nullptr) {
+        curr->pNext = new TNode<T>(currList->data);
+        curr = curr->pNext;
+        currList = currList->pNext;
     }
-    return pFirst->data;
+}
+
+template<typename T>
+void List<T>::clear()
+{
+    reset();
+    while (curr != pStop) {
+        TNode<T>* tmp = curr->pNext;
+        delete pCurr;
+        curr = tmp;
+    }
 }
 
 template <typename T>
