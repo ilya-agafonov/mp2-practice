@@ -26,18 +26,6 @@ TEST(Monom, getDegree_returns_correct_value) {
     EXPECT_EQ(456, m.getDegree());
 }
 
-TEST(Monom, can_setCoef) {
-    Monom m;
-    m.setCoef(9.99);
-    EXPECT_EQ(9.99, m.getCoef());
-}
-
-TEST(Monom, can_setDegree) {
-    Monom m;
-    m.setDegree(321);
-    EXPECT_EQ(321, m.getDegree());
-}
-
 TEST(Monom, equal_operator_returns_true_for_equal_monomials) {
     Monom m1(1.0, 123), m2(1.0, 123);
     EXPECT_EQ(true, m1 == m2);

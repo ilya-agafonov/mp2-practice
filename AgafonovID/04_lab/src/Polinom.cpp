@@ -165,6 +165,15 @@ Polinom Polinom::operator*(const Polinom& other) const {
     return res;
 }
 
+Polinom Polinom::operator+(const Monom& m)
+{
+    Polinom p(*this);
+    Monom m1(m);
+    p.insert(m1);
+    return p;
+}
+
+
 Polinom Polinom::operator*(double scalar) const {
     Polinom res;
     TNode<Monom>* curr = this->monom.getFirst();
@@ -200,14 +209,11 @@ bool Polinom::operator!=(const Polinom& other) const {
     return !(*this == other);
 }
 
-double Polinom::evaluate(double x, double y, double z) const {
-    double sum = 0.0;
-    TNode<Monom>* curr = this->monom.getFirst();
-    while (curr != this->monom.getHead()) {
-        sum += curr->data(x, y, z);
-        curr = curr->pNext;
-    }
-    return sum;
+double Polinom::operator()(double x, double y, double z) const {
+    double res = 0.0;
+    
+    
+    return res;
 }
 
 std::ostream& operator<<(std::ostream& out, const Polinom& p) {

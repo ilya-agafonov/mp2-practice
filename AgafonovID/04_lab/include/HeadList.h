@@ -49,7 +49,7 @@ void HeadList<T>::pushFront(TNode<T>* pNode) {
 
 template <typename T>
 void HeadList<T>::removefirst() {
-    List<T>::removeFirst();
+    List<T>::removefirst();
     pHead->pNext = pFirst;
 }
 

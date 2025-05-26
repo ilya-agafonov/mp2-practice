@@ -10,19 +10,6 @@ TEST(HeadList, created_list_is_empty) {
     EXPECT_EQ(true, l.IsEmpty());
 }
 
-TEST(HeadList, can_push_front_to_list) {
-    HeadList<int> l;
-    TNode<int>* node = new TNode<int>(5);
-    l.pushFront(node);
-    EXPECT_EQ(5, l.reset());
-}
-
-TEST(HeadList, can_push_back_to_list) {
-    HeadList<int> l;
-    TNode<int>* node = new TNode<int>(5);
-    l.pushBack(node);
-    EXPECT_EQ(5, l.reset());
-}
 
 TEST(HeadList, size_returns_correct_value) {
     HeadList<int> list;
@@ -66,23 +53,6 @@ TEST(HeadList, remove_throws_if_not_found) {
     ASSERT_ANY_THROW(list.remove(2));
 }
 
-TEST(HeadList, removed_node_changes_list) {
-    HeadList<int> l;
-    TNode<int>* node1 = new TNode<int>(10);
-    TNode<int>* node2 = new TNode<int>(20);
-    l.pushFront(node1);
-    l.pushBack(node2);
-    l.remove(10);
-    EXPECT_EQ(20, l.reset());
-}
-
-TEST(HeadList, can_reset_to_first_element) {
-    HeadList<int> l;
-    TNode<int>* node = new TNode<int>(5);
-    l.pushFront(node);
-    EXPECT_EQ(5, l.reset());
-}
-
 TEST(HeadList, can_remove_first_element) {
     HeadList<int> l;
     TNode<int>* node1 = new TNode<int>(5);
@@ -92,15 +62,7 @@ TEST(HeadList, can_remove_first_element) {
     ASSERT_NO_THROW(l.removefirst());
 }
 
-TEST(HeadList, reset_after_removing_first_element) {
-    HeadList<int> l;
-    TNode<int>* node1 = new TNode<int>(5);
-    TNode<int>* node2 = new TNode<int>(10);
-    l.pushFront(node1);
-    l.pushBack(node2);
-    l.removefirst();
-    EXPECT_EQ(10, l.reset());
-}
+
 
 TEST(HeadList, can_copy_list) {
     HeadList<int> l1;

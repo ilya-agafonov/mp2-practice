@@ -35,13 +35,14 @@ public:
     virtual void pushBack(TNode<T>* pNode);
     void insertAfter(TNode<T>* pNode, int key);
     void insertBefore(TNode<T>* pNode, int key);
-    virtual void remove(int key);
+    virtual void remove(T key);
 
     void reset();
     void copy(const List<T>& list);
     void clear();
     virtual void removefirst();
     bool IsEmpty() const;
+    bool IsEnd();
     int Size() const;
 };
 
@@ -85,7 +86,7 @@ const List<T>& List<T>::operator=(const List<T>& list) {
         pFirst = nullptr;
         return *this;
     }
-    copy(listcopy)
+    copy(listcopy);
     return *this;
 }
 template <typename T>
@@ -177,12 +178,12 @@ void List<T>::insertBefore(TNode<T>* pNode, int key) {
 }
 
 template <typename T>
-void List<T>::remove(int key) {
+void List<T>::remove(T key) {
     reset();
     if (search(key) == nullptr) {
-        throw std::exception("key not found")
+        throw std::exception("key not found");
     }
-    if (pFirst->key == search(key)) { // TODO: removeFirst()
+    if (pFirst->data == key) { // TODO: removeFirst()
         removefirst();
         return;
     }
@@ -220,7 +221,7 @@ void List<T>::clear()
     reset();
     while (curr != pStop) {
         TNode<T>* tmp = curr->pNext;
-        delete pCurr;
+        delete curr;
         curr = tmp;
     }
 }
@@ -228,6 +229,12 @@ void List<T>::clear()
 template <typename T>
 bool List<T>::IsEmpty() const {
     return (pFirst == nullptr);
+}
+
+template<typename T>
+bool List<T>::IsEnd()
+{
+    return curr == pStop;
 }
 
 template <typename T>

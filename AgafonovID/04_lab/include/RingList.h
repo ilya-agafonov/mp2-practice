@@ -66,7 +66,7 @@ void RingList<T>::pushFront(TNode<T>* pNode)
 
 template<typename T>
 void RingList<T>::pushBack(TNode<T>* pNode) {
-    HeadList<T>::pushBack(newNode);
+    HeadList<T>::pushBack(pNode);
     this->pLast->pNext = this->pHead;
 }
 
