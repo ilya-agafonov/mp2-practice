@@ -32,10 +32,10 @@ Monom::Monom(const Monom& m) {
     degree = m.degree;
 }
 
-double Monom::getCoef()  {
+double Monom::getCoef() const {
     return coef;
 }
-int Monom::getDegree()  { 
+int Monom::getDegree() const {
     return degree;
 }
 

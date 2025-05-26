@@ -64,8 +64,8 @@ int main() {
             std::cout << "Введите x, y, z: ";
             std::cin >> x >> y >> z;
             
-            std::cout << "p1(x,y,z) = " << p1.evaluate(x, y, z) << std::endl;
-            std::cout << "p2(x,y,z) = " << p2.evaluate(x, y, z) << std::endl;
+            std::cout << "p1(x,y,z) = " << p1(x, y, z) << std::endl;
+            std::cout << "p2(x,y,z) = " << p2(x, y, z) << std::endl;
             break;
         case 0: std::cout << "Выход" << std::endl; break;
         default: std::cout << "неверный выбор" << std::endl;

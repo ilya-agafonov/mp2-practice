@@ -35,11 +35,7 @@ const RingList<T>& RingList<T>::operator=(const RingList<T>& list) {
     if (this == &list)
         return *this;
     clear();
-    TNode<T>* tmp = list.pHead->pNext;
-    while (tmp != list.pHead) {
-        pushBack(tmp->data); //err
-        tmp = tmp->pNext;
-    }
+    
     HeadList<T>::operator=(list);
     this->pStop = this->pHead;
     this->pLast->pNext = this->pHead;

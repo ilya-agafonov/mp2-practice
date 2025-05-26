@@ -64,7 +64,7 @@ TEST(Polinom, comparison_operator_not_equal_returns_true_for_different_polynomia
 
 TEST(Polinom, can_evaluate_polynomial) {
     Polinom p("2x^1y^1+1z^2");
-    double val = p.evaluate(2, 3, 4); 
+    double val = p(2, 3, 4); 
     EXPECT_DOUBLE_EQ(28.0, val);
 }
 

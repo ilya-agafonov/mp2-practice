@@ -13,8 +13,8 @@ struct Monom {
     Monom(double c, int d);
     Monom(const Monom&);
 
-    int getDegree();
-    double getCoef();
+    int getDegree() const;
+    double getCoef() const;
 
     bool operator==(const Monom& other) const;
     bool operator!=(const Monom& other) const;
